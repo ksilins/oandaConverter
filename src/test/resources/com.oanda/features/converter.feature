@@ -1,6 +1,6 @@
+@all
 Feature: Currency converter testing
 
-  @all
   Scenario: adding custom bank interest
     Given EUR is converted to GBP
     When amount to convert is set to 20500
