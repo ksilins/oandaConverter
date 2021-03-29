@@ -19,18 +19,18 @@ public class Converter {
     private final ConverterValues values = new ConverterValues();
     private final ValueParser parser = new ValueParser();
 
-    private final By CURRENCY_OWNED = By.id("quote_currency_input");
-    private final By CURRENCY_OWNED_AMOUNT = By.id("quote_amount_input");
-    private final By CURRENCY_OWNED_CODE = By.id("quote_currency_code");
-    private final By CURRENCY_CONVERTED = By.id("base_currency_input");
-    private final By CURRENCY_CONVERTED_AMOUNT = By.id("base_amount_input");
-    private final By CURRENCY_CONVERTED_CODE = By.id("base_currency_code");
-    private final By FLIP_CURRENCIES = By.id("flipper");
-    private final By RATE_INPUT_FILED = By.id("interbank_rates_input");
-    private final By SET_RATE_VALUE = By.id("form_interbank_rates_hidden");
-    private final By RATE_DROPDOWN_CARET = By.id("rate_caret");
-    private final By RATE_DROPDOWN_LIST = By.id("interbank_rate_list_container");
-    private final By END_DATE_INPUT = By.id("end_date_input");
+    private final By CURRENCY_OWNED = By.id("quote_currency_input"),
+            CURRENCY_OWNED_AMOUNT = By.id("quote_amount_input"),
+            CURRENCY_OWNED_CODE = By.id("quote_currency_code"),
+            CURRENCY_CONVERTED = By.id("base_currency_input"),
+            CURRENCY_CONVERTED_AMOUNT = By.id("base_amount_input"),
+            CURRENCY_CONVERTED_CODE = By.id("base_currency_code"),
+            FLIP_CURRENCIES = By.id("flipper"),
+            RATE_INPUT_FILED = By.id("interbank_rates_input"),
+            SET_RATE_VALUE = By.id("form_interbank_rates_hidden"),
+            RATE_DROPDOWN_CARET = By.id("rate_caret"),
+            RATE_DROPDOWN_LIST = By.id("interbank_rate_list_container"),
+            END_DATE_INPUT = By.id("end_date_input");
 
     public void currencyOwnedSelect(String ownCurrency) {
         $(CURRENCY_OWNED)
