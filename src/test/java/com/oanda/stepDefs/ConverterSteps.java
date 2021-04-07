@@ -18,11 +18,12 @@ public class ConverterSteps {
     @Before
     public void setUp() {
         closeWebDriver();
-
         Configuration.baseUrl = "https://www1.oanda.com/currency/converter/";
         Configuration.browser = "Chrome";
         Configuration.timeout = 5000;
         Configuration.browserSize = "1366x1000";
+        Configuration.headless = true;
+        Configuration.screenshots = true;
 
         open("");
     }
@@ -58,8 +59,8 @@ public class ConverterSteps {
     }
 
     @Then("^(.*) amount is calculated correctly$")
-    public void convertedAmountIsCalculatedCorrectly(String condition) {
-        converter.assertConvertedAmount(condition);
+    public void convertedAmountIsCalculatedCorrectly(String currencyFlip) {
+        converter.assertConvertedAmount(currencyFlip);
     }
 
     @Then("currency is flipped")

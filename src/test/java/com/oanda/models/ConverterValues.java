@@ -1,22 +1,28 @@
 package com.oanda.models;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 
 public class ConverterValues {
 
     String ownCurrency;
     String convertCurrency;
-    String ownAmount;
-    String convertedAmount;
-    String bankInterest = "0";
+    BigDecimal ownAmount;
+    BigDecimal convertedAmount;
+    BigDecimal bankInterest = new BigDecimal(0);
     LocalDate date;
 
-    public String getBankInterest() {
+    public BigDecimal getBankInterest() {
         return bankInterest;
     }
 
     public void setBankInterest(String bankInterest) {
-        this.bankInterest = bankInterest;
+        float parseRate = Float.parseFloat(bankInterest);
+        DecimalFormat df = new DecimalFormat("#.00");
+        df.setRoundingMode(RoundingMode.UP);
+        this.bankInterest = new BigDecimal(df.format(parseRate));
     }
 
     public String getOwnCurrency() {
@@ -35,20 +41,20 @@ public class ConverterValues {
         this.convertCurrency = convertCurrency;
     }
 
-    public String getOwnAmount() {
+    public BigDecimal getOwnAmount() {
         return ownAmount;
     }
 
-    public void setOwnAmount(String ownAmount) {
-        this.ownAmount = ownAmount.replaceAll(",", "");
+    public void setOwnAmount(BigDecimal ownAmount) {
+        this.ownAmount = ownAmount;
     }
 
-    public String getConvertedAmount() {
+    public BigDecimal getConvertedAmount() {
         return convertedAmount;
     }
 
-    public void setConvertedAmount(String convertedAmount) {
-        this.convertedAmount = convertedAmount.replaceAll(",", "");
+    public void setConvertedAmount(BigDecimal convertedAmount) {
+        this.convertedAmount = convertedAmount;
     }
 
     public LocalDate getDate() {

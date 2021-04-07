@@ -1,9 +1,10 @@
 package com.oanda.pages;
 
 import com.oanda.models.ConverterValues;
-import com.oanda.utils.ValueParser;
+import com.oanda.utils.DataHelpers;
 import org.openqa.selenium.By;
 
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
@@ -17,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class Converter {
 
     private final ConverterValues values = new ConverterValues();
-    private final ValueParser parser = new ValueParser();
+    private final DataHelpers parser = new DataHelpers();
 
     private final By CURRENCY_OWNED = By.id("quote_currency_input"),
             CURRENCY_OWNED_AMOUNT = By.id("quote_amount_input"),
@@ -47,13 +48,16 @@ public class Converter {
     }
 
     public void currencyAmountInput(String currencyAmount) {
-        values.setOwnAmount(currencyAmount);
+        BigDecimal ownAmount = new BigDecimal(currencyAmount);
+        values.setOwnAmount(ownAmount);
         $(CURRENCY_CONVERTED_AMOUNT).clear();
         $(CURRENCY_OWNED_AMOUNT)
                 .val(currencyAmount)
                 .pressEnter();
         $(CURRENCY_CONVERTED_AMOUNT).shouldNotBe(empty);
-        values.setConvertedAmount($(CURRENCY_CONVERTED_AMOUNT).getValue());
+
+        BigDecimal convertedAmount = new BigDecimal($(CURRENCY_CONVERTED_AMOUNT).getValue().replaceAll(",",""));
+        values.setConvertedAmount(convertedAmount);
     }
 
     public void assertOwnCurrencyAmount(String currencyAmount) {
@@ -80,7 +84,7 @@ public class Converter {
         float parseRate = Float.parseFloat(interest);
         DecimalFormat df = new DecimalFormat("#.00");
         df.setRoundingMode(RoundingMode.UP);
-        assertThat(df.format(Float.parseFloat(values.getBankInterest()))).isEqualTo(df.format(parseRate));
+        assertThat(values.getBankInterest()).isEqualTo(df.format(parseRate));
     }
 
     public void getDateField() {
@@ -122,33 +126,26 @@ public class Converter {
         assertThat(currency).isEqualTo(values.getConvertCurrency());
     }
 
-    public void assertConvertedAmount(String condition) {
-        double threshold;
-        double interest = Double.parseDouble(values.getBankInterest());
-        double afterInterest = Double.parseDouble($(CURRENCY_CONVERTED_AMOUNT).getValue().replaceAll(",", ""));
+    public void assertConvertedAmount(String currencyFlip) {
+        BigDecimal threshold = new BigDecimal("0.1");
+        BigDecimal interest = values.getBankInterest();
+        BigDecimal afterInterest = new BigDecimal($(CURRENCY_CONVERTED_AMOUNT).getValue().replaceAll(",", ""));
 
-        String[] div = Double.toString(afterInterest).split("\\.");
-        if ("0".equals(div[1])) {
-            threshold = 1;
+        BigDecimal beforeInterest;
+        if ("converted".equals(currencyFlip)) {
+            beforeInterest = values.getConvertedAmount();
         } else {
-            threshold = 0.1;
-        }
-
-        double beforeInterest;
-        if ("converted".equals(condition)) {
-            beforeInterest = Double.parseDouble(values.getConvertedAmount());
-        } else {
-            if (interest > 0) {
-                setBankInterest("0");
-                beforeInterest = Double.parseDouble($(CURRENCY_CONVERTED_AMOUNT).getValue().replaceAll(",", ""));
-            } else {
+            if ("0".equals(interest.toString())) {
                 beforeInterest = afterInterest;
+            } else {
+                setBankInterest("0");
+                beforeInterest = new BigDecimal($(CURRENCY_CONVERTED_AMOUNT).getValue().replaceAll(",", ""));
             }
         }
 
-        double estimate = beforeInterest - (beforeInterest * (interest / 100));
+        BigDecimal estimate = DataHelpers.estimatedConvertedAmount(beforeInterest, interest);
 
-        assertThat(Math.abs(estimate - afterInterest)).isLessThan(threshold);
+        assertThat(estimate.subtract(afterInterest).abs()).isLessThan(threshold);
     }
 
     public void setPredefinedRate(String rate) {
